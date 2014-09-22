@@ -116,20 +116,20 @@ public abstract class CustomFurnace extends GenericCubeCustomBlock implements Li
 
 	
 	public boolean usingToolLevel(LivingEntity living, int level) {
-		if(!(living instanceof HumanEntity)) return false;
-		CraftItemStack is =  (CraftItemStack) ((HumanEntity) living).getItemInHand();
-		if(is == null) return false;
-		Item item = is.getHandle().getItem();
-		if(!(item instanceof ItemTool)) return false;
-		ItemTool it = (ItemTool) item;
-		EnumToolMaterial tm = null;
-		try {
-			Field f = ItemTool.class.getDeclaredField("b");
-			f.setAccessible(true);
-			tm = (EnumToolMaterial) f.get(it);
-		} catch (Exception e) { e.printStackTrace(); }
-		if(tm == null) return false;
-		return tm.d() >= level;
+	    if(!(living instanceof HumanEntity)) return false;
+	    CraftItemStack is =  (CraftItemStack) ((HumanEntity) living).getItemInHand();
+	    if(is == null) return false;
+	    Item item = is.getHandle().getItem();
+	    if(!(item instanceof ItemTool)) return false;
+	    ItemTool it = (ItemTool) item;
+	    EnumToolMaterial tm = null;
+	    try {
+	        Field f = ItemTool.class.getDeclaredField("b");
+	        f.setAccessible(true);
+	        tm = (EnumToolMaterial) f.get(it);
+	    } catch (Exception e) { e.printStackTrace(); }
+	    if(tm == null) return false;
+	    return tm.d() >= level;
 	}
 	
 	private boolean validateClient(SpoutPlayer player) {

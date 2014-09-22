@@ -56,5 +56,5 @@ public class IronFurnaceData extends CustomFurnaceData {
 
 	public String getName() {
 		return "Iron Furnace";
-	}
+	}    
 }

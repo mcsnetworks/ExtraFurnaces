@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.server.Block;
-import net.minecraft.server.FurnaceRecipes;
+import net.minecraft.server.RecipesFurnace;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -144,7 +144,7 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
     public boolean update() {
     	if(((SpoutBlock) Bukkit.getWorld(world).getBlockAt(x, y, z)).getCustomBlock() == null) return false;
     	if(furnacerot == -1) {
-    		switch ( Spout.getServer().getWorld(world).getChunkAt(x, y, z).getCustomBlockRotation(x, y, z) ) {
+    		switch ( Spout.getServer().getWorld(world).getChunkAt(x, y, z).getCustomBlockData(x, y, z) ) {
     		case 0:
     			furnacerot = 3;
     			break;
@@ -204,7 +204,7 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
 			replace = true;
 			CustomBlock block = getBlock(isBurning());
 			Bukkit.getWorld(world).getBlockAt(x, y, z).setTypeIdAndData(block.getBlockId(), (byte) furnacerot, true);
-			SpoutManager.getMaterialManager().overrideBlock(Bukkit.getWorld(world), x, y, z, block, Spout.getServer().getWorld(world).getChunkAt(x, y, z).getCustomBlockRotation(x, y, z));
+			SpoutManager.getMaterialManager().overrideBlock(Bukkit.getWorld(world), x, y, z, block, Spout.getServer().getWorld(world).getChunkAt(x, y, z).getCustomBlockData(x, y, z));
     		SpoutManager.getChunkDataManager().setBlockData("ExtraFurnaces", Bukkit.getWorld(world), x, y, z, this);
     		replace = false;
 		}
@@ -266,7 +266,7 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
     protected int getItemBurnTime(ItemStack item) {
         if (item == null) return 0;
         int id = item.getTypeId();
-        if (id < 256 && Block.byId[id].material == net.minecraft.server.Material.WOOD) return 300;
+        if (id < 256 && net.minecraft.server.Block.byId[id].material == net.minecraft.server.Material.WOOD) return 300;
         if (id == Material.STICK.getId()) return 100;
         if (id == Material.COAL.getId()) return 1600;
         if (id == Material.LAVA_BUCKET.getId()) return 20000;
@@ -279,21 +279,21 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
     	Method m1 = null;
     	Method m2 = null;
     	try {
-    		m1 = FurnaceRecipes.class.getDeclaredMethod("getResult",int.class);
+    		m1 = RecipesFurnace.class.getDeclaredMethod("getResult",int.class);
     	} catch(Exception e) { }
     	try {
-			m2 = FurnaceRecipes.class.getDeclaredMethod("getResult",net.minecraft.server.ItemStack.class);
+			m2 = RecipesFurnace.class.getDeclaredMethod("getResult",net.minecraft.server.ItemStack.class);
 		} catch (Exception e) { }
 		if(m1 != null) {
 			try {
-				net.minecraft.server.ItemStack is = (net.minecraft.server.ItemStack) m1.invoke(FurnaceRecipes.getInstance(), in.getTypeId());
-				return is == null ? null : new CraftItemStack(is);
+				net.minecraft.server.ItemStack is = (net.minecraft.server.ItemStack) m1.invoke(RecipesFurnace.getInstance(), in.getTypeId());
+				return is == null ? null : new org.bukkit.craftbukkit.inventory.CraftItemStack(is);
 			} catch (Exception e) { }
 		}
 		if(m2 != null) {
 			try {
-				net.minecraft.server.ItemStack is = (net.minecraft.server.ItemStack) m2.invoke(FurnaceRecipes.getInstance(), new CraftItemStack(in).getHandle());
-				return is == null ? null : new CraftItemStack(is);
+				net.minecraft.server.ItemStack is = (net.minecraft.server.ItemStack) m2.invoke(RecipesFurnace.getInstance(), new org.bukkit.craftbukkit.inventory.CraftItemStack(in).getHandle());
+				return is == null ? null : new org.bukkit.craftbukkit.inventory.CraftItemStack(is);
 			} catch (Exception e) { }
 		}
 		return null;
@@ -440,7 +440,7 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
                     } else {
                         // More than a single stack!
                         if (item.getAmount() > getMaxStackSize()) {
-                            CraftItemStack stack = new CraftItemStack(item.getTypeId(), getMaxStackSize(), item.getDurability());
+                            org.bukkit.craftbukkit.inventory.CraftItemStack stack = new org.bukkit.craftbukkit.inventory.CraftItemStack(item.getTypeId(), getMaxStackSize(), item.getDurability(), null);
                             stack.addUnsafeEnchantments(item.getEnchantments());
                             setItem(firstFree, stack);
                             item.setAmount(item.getAmount() - getMaxStackSize());
