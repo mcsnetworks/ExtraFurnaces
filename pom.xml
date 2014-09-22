@@ -42,6 +42,13 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/libs/minecraft_server.1.6.4.jar</systemPath>			
 		</dependency>
+		<dependency>
+			<groupId>net.morematerials</groupId>
+			<artifactId>morematerials</artifactId>
+			<version>1.6.4-R2.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/libs/MoreMaterials-2.52.jar</systemPath>			
+		</dependency>
   </dependencies>
   <repositories>
 	<repository>

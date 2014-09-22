@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import net.minecraft.server.Block;
 import net.minecraft.server.RecipesFurnace;
+import net.morematerials.MoreMaterials;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,6 +34,7 @@ import org.getspout.spoutapi.Spout;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.event.spout.ServerTickEvent;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -243,20 +245,35 @@ public abstract class CustomFurnaceData extends CraftInventoryWrapper implements
     /**
      * Turn one item from the furnace source stack into the appropriate smelted item in the furnace result stack
      */
+    @SuppressWarnings({ "unused", "null" })
     public void smeltItem() {
-        if (!canSmelt()) return;
-
-        ItemStack result = getResult(furnaceItemStacks[getBurnIndex()]);
+        if (!canSmelt()) {
+            return;
+        }
+        
+        ItemStack result = null;        
+        SpoutItemStack customItemStack = ((MoreMaterials) Bukkit.getPluginManager().getPlugin("MoreMaterials")).getFurnaceRecipeManager().getResult(new SpoutItemStack(furnaceItemStacks[getBurnIndex()]));
+        
+        if (customItemStack == null) {            
+            result = getResult(furnaceItemStacks[getBurnIndex()]);
+        } else {            
+            result = customItemStack;
+        }
         
         FurnaceSmeltEvent furnaceSmeltEvent = new FurnaceSmeltEvent(new CraftSpecialBlock(Bukkit.getWorld(world).getBlockAt(x, y, z)), furnaceItemStacks[getBurnIndex()], result);
         Bukkit.getPluginManager().callEvent(furnaceSmeltEvent);
 
-        if (furnaceItemStacks[getResultIndex()] == null) furnaceItemStacks[getResultIndex()] = result.clone();
-        else if (furnaceItemStacks[getResultIndex()].getType().equals(result.getType())) furnaceItemStacks[getResultIndex()].setAmount(furnaceItemStacks[getResultIndex()].getAmount() + 1);
+        if (furnaceItemStacks[getResultIndex()] == null) {
+            furnaceItemStacks[getResultIndex()] = result.clone();
+        } else if (furnaceItemStacks[getResultIndex()].getType().equals(result.getType())) {
+            furnaceItemStacks[getResultIndex()].setAmount(furnaceItemStacks[getResultIndex()].getAmount() + result.getAmount());
+        }
 
         furnaceItemStacks[getBurnIndex()].setAmount(furnaceItemStacks[getBurnIndex()].getAmount()-1);
 
-        if (furnaceItemStacks[getBurnIndex()].getAmount() <= 0) furnaceItemStacks[getBurnIndex()] = null;
+        if (furnaceItemStacks[getBurnIndex()].getAmount() <= 0) {
+            furnaceItemStacks[getBurnIndex()] = null;
+        }
     }
 
 	/**
